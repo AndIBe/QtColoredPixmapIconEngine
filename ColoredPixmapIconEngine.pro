@@ -20,6 +20,6 @@ DISTFILES += \
 
 
 PLUGIN_TYPE = iconengines
-PLUGIN_CLASS_NAME = ColoredIconEnginePlugin
+PLUGIN_CLASS_NAME = ColoredPixmapIconEnginePlugin
 PLUGIN_EXTENDS = -
 load(qt_plugin)
