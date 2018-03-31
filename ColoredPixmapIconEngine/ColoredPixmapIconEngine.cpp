@@ -1,7 +1,6 @@
 #include "ColoredPixmapIconEngine.h"
 
 #include <QPainter>
-#include <QProcessEnvironment>
 #include <QLoggingCategory>
 
 #include "private/qguiapplication_p.h"
@@ -18,7 +17,7 @@ QPixmap ColoredPixmapIconEngine::pixmap(const QSize& size, QIcon::Mode mode, QIc
         return pix;
     }
 
-    const QString colorName = QProcessEnvironment::systemEnvironment().value("QT_COLORED_ICONS_COLOR");
+    const QString colorName = QString::fromLocal8Bit(qgetenv("QT_COLORED_ICONS_COLOR"));
     const QColor color(colorName);
     if (color.isValid()) {
 //        lcDebug << "Colorize icon with color" << color.name();

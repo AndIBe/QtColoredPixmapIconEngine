@@ -5,7 +5,6 @@
 #include <QFileInfo>
 #include <QIconEnginePlugin>
 #include <QLoggingCategory>
-#include <QProcessEnvironment>
 #include <QRegularExpression>
 
 Q_LOGGING_CATEGORY(lcColoredPixmapIconEnginePlugin, "ColoredPixmapIconEnginePlugin")
@@ -23,21 +22,22 @@ public:
     ColoredPixmapIconEnginePlugin(QObject *parent = Q_NULLPTR);
     QIconEngine *create(const QString &filename = QString()) override;
 private:
-    QRegularExpression m_reColoredFilesFilter;
+    QRegularExpression m_reColoredFiles;
 };
 
 ColoredPixmapIconEnginePlugin::ColoredPixmapIconEnginePlugin(QObject *parent) : QIconEnginePlugin(parent)
 {
-    const QString fileNamePattern = QProcessEnvironment::systemEnvironment().value("QT_COLORED_ICONS_FILES_PATTERN");
-    m_reColoredFilesFilter.setPattern(fileNamePattern);
-    m_reColoredFilesFilter.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+    const QString fileNamePattern = QString::fromLocal8Bit(qgetenv("QT_COLORED_ICONS_FILES_PATTERN"));
+    m_reColoredFiles.setPattern(fileNamePattern);
+    m_reColoredFiles.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
     lcDebug << "Use regexp pattern:" << fileNamePattern;
 }
 
 QIconEngine *ColoredPixmapIconEnginePlugin::create(const QString &filePath)
 {
     const QString baseFileName = QFileInfo(filePath).baseName();
-    const bool colorizeFile = m_reColoredFilesFilter.match(baseFileName).hasMatch();
+    const bool colorizeFile = m_reColoredFiles.pattern().isEmpty() ? false
+                                                                   : m_reColoredFiles.match(baseFileName).hasMatch();
     QPixmapIconEngine *engine = colorizeFile ? (new ColoredPixmapIconEngine) : (new QPixmapIconEngine);
 
     lcDebug << qPrintable(QString("Use %1 icon engine for file:").arg(colorizeFile ? "colored" : "default"))

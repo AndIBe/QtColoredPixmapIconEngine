@@ -1,6 +1,6 @@
 QT += core-private gui-private
 
-#CONFIG += static
+CONFIG += static
 
 TARGET  = ColoredPixmapIconEngine
 
